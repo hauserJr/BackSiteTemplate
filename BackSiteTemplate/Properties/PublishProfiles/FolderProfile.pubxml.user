@@ -8,9 +8,4 @@
     <TimeStampOfAssociatedLegacyPublishXmlFile />
     <_PublishTargetUrl>D:\PublishArea\BackSiteTemplate</_PublishTargetUrl>
   </PropertyGroup>
-  <ItemGroup>
-    <DestinationConnectionStrings Include="DB">
-      <Value>Data Source=.%3bInitial Catalog=BackSiteDBTemp%3bIntegrated Security=False%3bUser ID=sa%3bPassword=1qaz2wsx%3b</Value>
-    </DestinationConnectionStrings>
-  </ItemGroup>
 </Project>
