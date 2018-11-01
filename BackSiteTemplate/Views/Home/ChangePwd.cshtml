@@ -1,0 +1,68 @@
+﻿@{
+    if (@TempData["Message"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["Message"]
+        </div>
+    }
+}
+<form id="changePwd" asp-controller="Home" asp-action="ChangePwdAct" method="post">
+    @Html.AntiForgeryToken()
+    <div class="input-group mb-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">請輸入舊密碼</div>
+        </div>
+        <input type="password" class="form-control col-4" id="OldPwd" name="OldPwd" placeholder="" value="@TempData["OldPwd"]" autocomplete="off" />
+    </div>
+
+
+    <div class="input-group mb-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">請輸入新密碼</div>
+        </div>
+        <input type="password" class="form-control col-4" id="NewPwd" name="NewPwd" placeholder="" value="@TempData["NewPwd"]" autocomplete="off" />
+    </div>
+
+
+    <div class="input-group mb-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">再次輸入密碼</div>
+        </div>
+        <input type="password" class="form-control col-4" id="CheckPwd" name="CheckPwd" placeholder="" value="@TempData["CheckPwd"]" autocomplete="off" />
+    </div>
+
+    <button type="button" class="btn btn-md btn-primary" onclick="change()">變更</button>
+    <button type="button" class="btn btn-md btn-primary" onclick="location.href='/'">返回</button>
+</form>
+
+
+<script>
+    function change() {
+        if (($('#NewPwd').val().length <= 6 || $('#NewPwd') >= 20) || $('#CheckPwd').val().length <= 6 || $('#CheckPwd') >= 20) {
+            swal({
+                title: '注意?',
+                text: "密碼長度須介於6~20個字元之間!",
+                type: 'warning',
+                showCancelButton: false,
+                confirmButtonText: '知道了',
+                confirmButtonColor: '#3085d6'
+            });
+            return false;
+        }
+        if ($('#NewPwd').val() != $('#CheckPwd').val()) {
+            $('#NewPwd').val('');
+            $('#CheckPwd').val('');
+            swal({
+                title: '注意?',
+                text: "密碼前後不一致請重新輸入",
+                type: 'warning',
+                showCancelButton: false,
+                confirmButtonText: '知道了',
+                confirmButtonColor: '#3085d6'
+            });
+            return false;
+        }
+        $('#changePwd').submit();
+    }
+
+</script>

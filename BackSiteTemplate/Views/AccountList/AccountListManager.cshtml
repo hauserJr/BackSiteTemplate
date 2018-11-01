@@ -1,0 +1,259 @@
+﻿
+@{
+    ViewData["Title"] = "AccountListManager";
+}
+
+<button type="button" class="btn btn-md btn-primary" onclick="UpModal(this)" data-modeltype="1">新增</button>
+
+<button type="button" class="btn btn-md btn-info" onclick="UpErrorTimesModal(this)" data-modeltype="2">修改登入錯誤次數</button>
+<div class="alert alert-primary mt-2" role="alert">
+    @{ 
+        string ErrorTimez = @ViewBag.ErrorTimes != 0 ? string.Format("登入錯誤達「{0}」次，將鎖定帳號。", @ViewBag.ErrorTimes) : "未啟用帳號錯誤上限鎖定功能。";
+    }
+    @ErrorTimez
+</div>
+
+<div id="Dts" class="container bg-white text-dark mt-3" style="font-size:15px">
+    <table id="example" class="table table-striped table-bordered display" style="width: 100%;">
+        <thead>
+            <tr>
+                <th style="width: 20%;">使用者名稱</th>
+                <th style="width: 20%;">帳號</th>
+                <th style="width: 20%;">使用者群組</th>
+                <th style="width: 15%;">啟用狀態</th>
+                <th style="width: 20%;">動作</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>使用者名稱</th>
+                <th>帳號</th>
+                <th>使用者群組</th>
+                <th>啟用狀態</th>
+                <th>動作</th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="AccountListModal" tabindex="-1" role="dialog" aria-labelledby="AccountListModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AccountListModalTitle"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-auto">
+                    <form id="AccountSettingForm">
+                        <div id="GroupArea">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-primary SaveData">儲存</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ErrorTimesModal" tabindex="-1" role="dialog" aria-labelledby="ErrorTimesModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ErrorTimesModalTitle"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-auto">
+                    <form id="ErrorTimesForm">
+                        <div id="ErrorTimesArea">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-primary" onclick="EditErrorTime()">儲存</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        InitDataTables();
+    });
+    function InitDataTables() {
+        var Table = $('#example');
+        Table.dataTable().fnDestroy();
+        Table.f = "close";
+        Table.DataTable({
+            "processing": false,
+            "serverSide": true,
+            "ajax": {
+                "url": "/Ajax_AccountList/GetPageAccountList",
+                "type": "GET"
+            },
+            "language": {
+                "processing": "處理中...",
+                "lengthMenu": "顯示 _MENU_ 筆",
+                "zeroRecords": "未找到任何資料",
+                "info": "顯示第 _START_ 至 _END_ 項結果，共 _TOTAL_ 項",
+                "infoEmpty": "沒有任何資料",
+                "infoFiltered": "<p>(從 _MAX_ 項結果過濾)",
+                "search": "關鍵字",
+                "paginate": {
+                    "sFirst": "首頁",
+                    "sPrevious": "上一頁",
+                    "sNext": "下一頁",
+                    "sLast": "尾頁"
+                }
+            },
+            "columns": [
+                {
+                    "data": "UserName"
+                },
+                {
+                    "data": "Account"
+                },
+                {
+                    "data": "UserGroupName"
+                },
+                {
+                    "data": "AccountEnable",
+                    orderable: true,
+                    render: function (data, type, row, meta) {
+                        return data;
+                    }
+                },
+                {
+                    "data": "UserId",
+                    orderable: false, // 禁用排序
+                    render: function (data, type, row, meta) {
+                        var ResetBtn = "<button class='btn btn-danger mr-1' onclick='ResetPwd(this)' data-myid='" + data + "'>重置密碼</button>";
+                        var EditBtn = "<button class='btn btn-primary mr-1' onclick='EditData(this)' data-myid='" + data + "'>編輯</button>";
+                        return EditBtn + ResetBtn;
+                    }
+                }
+            ]
+        });
+    }
+
+    function UpErrorTimesModal(e) {
+        $.ajax({
+            url: '/Ajax_AccountList/GetErrorTimesData',
+            type: 'POST',
+            success: function (data) {
+                $('#ErrorTimesArea').empty();
+                $('#ErrorTimesArea').html(data);
+                $('#ErrorTimesModal').modal('show');
+            }
+        });
+    }
+    function UpModal(e) {
+        $('#AccountListModalTitle').text($(e).text());
+        $.ajax({
+            url: '/Ajax_AccountList/GetAccountData',
+            type: 'POST',
+            success: function (data) {
+                $('#GroupArea').empty();
+                $('#GroupArea').html(data);
+                $('#AccountListModal').modal('show');
+            }
+        });
+
+    }
+
+    function EditData(e) {
+        $('#AccountListModalTitle').text($(e).text());
+        $.ajax({
+            url: '/Ajax_AccountList/GetAccountData',
+            type: 'POST',
+            data: { UserId: $(e).data('myid') },
+            success: function (data) {
+                $('#GroupArea').empty();
+                $('#GroupArea').html(data);
+                $('#AccountListModal').modal('show');
+            }
+        });
+    }
+
+    function ResetPwd(e) {
+        swal({
+            title: '確定嗎?',
+            type: 'warning',
+            html: "你即將重置該帳號的密碼<p><div class='alert alert-danger' role='alert'>注意重置後將無法恢復！</div>" ,
+            showCancelButton: true,
+            confirmButtonText: '確認!',
+            cancelButtonText: '取消',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33'
+        }).then(function (result){
+            if (result.value) {
+                $.ajax({
+                    url: '/Ajax_AccountList/ResetPwd',
+                    data: { UserId: $(e).data('myid') },
+                    type: 'POST',
+                    success: function (data) {
+                        swal({
+                            title: '『' + data + '』<strong>此為重置後的密碼</strong>',
+                            type: 'success',
+                            html:'請妥善保管此密碼。',
+                            showCloseButton: false,
+                            showCancelButton: false,
+                            focusConfirm: false,
+                            confirmButtonText:
+                                '已妥善保管',
+                            confirmButtonAriaLabel: 'Thumbs up, great!'
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    $(".SaveData").click(function (event) {
+        var submitStatus = CheckStrLeng();
+        if (submitStatus) {
+            $.ajax({
+                url: '/Ajax_AccountList/SaveUserAccount',
+                data: $('#AccountSettingForm').serialize(),
+                type: 'POST',
+                success: function (data) {
+                    if (data) {
+                        $('#AccountListModal').modal('hide');
+                        InitDataTables();
+                    }
+                    else {
+                        $('#LoginAccount').val('');
+                        $('#LoginAccountTip').css("display", "inline").fadeOut(5000);
+                    }
+                }
+            });
+        }
+    });
+
+    function EditErrorTime() {
+        $.ajax({
+            url: '/Ajax_AccountList/SaveErrorTimes',
+            data: {
+                ErrorTime: $('#ErrorTime').val()
+            },
+            type: 'POST',
+            success: function (data) {
+                location.reload();
+            }
+        });
+    }
+</script>

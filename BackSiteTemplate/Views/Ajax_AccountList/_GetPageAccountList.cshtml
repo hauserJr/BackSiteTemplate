@@ -1,0 +1,120 @@
+﻿@using BackSiteTemplate.Models.ViewModel;
+@model vmAccountData;
+
+@{
+    var UserId = Model.UserId;
+    var UserName = Model.UserName;
+    var UserAccount = Model.LoginAccount;
+
+    var UserAccountReadOnly = string.IsNullOrEmpty(UserAccount) ? "" : "readonly";
+    var ActionType = UserName == null ? 1 : 0;
+}
+
+<div class="input-group mb-2">
+    <div class="input-group-prepend">
+        <div class="input-group-text">使用者姓名</div>
+    </div>
+    <input type="text" class="form-control" id="UserName" name="UserName" value="@UserName" placeholder="使用者姓名" autocomplete="off" />
+</div>
+
+<div class="input-group mb-2">
+    <div class="input-group-prepend">
+        <div class="input-group-text">帳號</div>
+    </div>
+    <input type="text" class="form-control" id="LoginAccount" name="LoginAccount" value="@UserAccount" placeholder="帳號" autocomplete="off" @UserAccountReadOnly onchange="CheckLoginAccount(this)"/>
+</div>
+<div class="input-group mb-2">
+    <span class="text-danger" id="LoginAccountTip" style="display: none;">帳號重複已自動清除，請重新輸入</span>
+</div>
+@{
+    if (UserName == null)
+    {
+        <div class="input-group mb-2">
+            <div class="input-group-prepend">
+                <div class="input-group-text">密碼</div>
+            </div>
+            <input type="password" class="form-control" id="LoginPwd" name="LoginPwd" placeholder="密碼" autocomplete="off" />
+        </div>
+    }
+}
+
+<div class="input-group mb-2">
+    <div class="input-group-prepend">
+        <div class="input-group-text">群組</div>
+    </div>
+    @Html.DropDownList("RoleGroupId", Model.RoleGroupSelectListItem, new { @class = "form-control" })
+</div>
+@{
+    if (UserName != null)
+    {
+        <div class="input-group mb-2">
+            <div class="input-group-prepend">
+                <div class="input-group-text">帳號啟用狀態</div>
+            </div>
+            @Html.DropDownList("AccountEnable", Model.UserEnableSelectListItem, new { @class = "form-control" })
+        </div>
+        <div class="input-group mb-2">
+            <div class="input-group-prepend">
+                <div class="input-group-text">帳號鎖定狀態</div>
+            </div>
+            @Html.DropDownList("OnLock", Model.UserLockSelectListItem, new { @class = "form-control" })
+        </div>
+        <input name="UserId" value="@UserId" hidden />
+    }
+}
+<script>
+    function CheckStrLeng() {
+        var submitStatus = true;
+        if (@ActionType == 1) {
+            if ($('#UserName').val().length < 2 || $('#UserName').val().length > 20) {
+                submitStatus = !submitStatus;
+                swal(
+                    '錯誤！',
+                    '姓名請輸入2~20個字元.',
+                    'warning'
+                );
+            } else if ($('#LoginAccount').val().length < 6 || $('#LoginAccount').val().length > 60) {
+                submitStatus = !submitStatus;
+                swal(
+                    '錯誤！',
+                    '帳號請輸入6~30個字元.',
+                    'warning'
+                );
+            } else if ($('#LoginPwd').val().length < 6 || $('#LoginPwd').val().length > 60) {
+                submitStatus = !submitStatus;
+                swal(
+                    '錯誤！',
+                    '密碼請輸入6~30個字元.',
+                    'warning'
+                );
+            }
+        }
+        else {
+            if ($('#UserName').val().length < 2 || $('#UserName').val().length > 20) {
+                submitStatus = !submitStatus;
+                swal(
+                    '錯誤！',
+                    '姓名請輸入2~20個字元.',
+                    'warning'
+                );
+            }
+        }
+        return submitStatus;
+    }
+
+    function CheckLoginAccount(e) {
+        $.ajax({
+            url: '/Ajax_AccountList/CheckLoginAccount',
+            type: 'POST',
+            data: {
+                LoginAccount: $(e).val()
+            },
+            success: function (data) {
+                if (data) {
+                    $('#LoginAccount').val('');
+                    $('#LoginAccountTip').css("display", "inline").fadeOut(7000);
+                }
+            }
+        });
+    }
+</script>

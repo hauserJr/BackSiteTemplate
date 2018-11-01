@@ -1,0 +1,71 @@
+﻿@using BackSiteTemplate.Models.ViewModel
+@model vmWhiteListData
+@{
+    string[] ipArry = new string[] { "", "", "", "" };
+    string Note = string.Empty;
+    if (Model != null)
+    {
+        Note = Model.Note;
+        ipArry = Model.Ip.Split(".");
+        <input name="Id" value="@Model.Id" hidden />
+    }
+}
+
+<div class="form-row">
+    <div class="col">
+        <input type="number" class="form-control" placeholder="1st" id="1st" name="WhiteListIP" autocomplete="off" min="0" max="255" maxlength="3" value="@ipArry[0]">
+    </div>
+
+    <div class="col">
+        <input type="number" class="form-control" placeholder="2nd" id="2nd" name="WhiteListIP" autocomplete="off" min="0" max="255" maxlength="3" value="@ipArry[1]">
+    </div>
+
+    <div class="col">
+        <input type="number" class="form-control" placeholder="3rd" id="3rd" name="WhiteListIP" autocomplete="off" min="0" max="255" maxlength="3" value="@ipArry[2]">
+    </div>
+
+    <div class="col">
+        <input type="number" class="form-control" placeholder="4th" id="4th" name="WhiteListIP" autocomplete="off" min="0" max="255" maxlength="3" value="@ipArry[3]">
+    </div>
+</div>
+
+
+<div class="input-group mt-2">
+    <div class="input-group-prepend">
+        <div class="input-group-text">備註</div>
+    </div>
+    <input type="text" class="form-control" id="Note" name="Note" value="@Note" placeholder="備註" autocomplete="off" />
+</div>
+
+<script>
+    function CheckNumber() {
+        var stVal = $('#1st').val();
+        var ndVal = $('#2nd').val();
+        var rdVal = $('#3rd').val();
+        var thVal = $('#4th').val();
+        var result = true;
+
+        if (stVal === "" || (stVal < 0 || stVal > 255)) {
+            swal("錯誤", "請填入0~255之間的數字", "warning");
+            $('#stVal').val('');
+            result = false;
+        }
+        if (ndVal === "" || (ndVal < 0 || ndVal > 255)) {
+            swal("錯誤", "請填入0~255之間的數字", "warning");
+            $('#ndVal').val('');
+            result = false;
+        }
+        if (rdVal === "" || (rdVal < 0 || rdVal > 255)) {
+            swal("錯誤", "請填入0~255之間的數字", "warning");
+            $('#rdVal').val('');
+            result = false;
+        }
+        if (thVal === "" || (thVal < 0 || thVal > 255)) {
+            swal("錯誤", "請填入0~255之間的數字", "warning");
+            $('#thVal').val('');
+            result = false;
+        }
+
+        return result;
+    }
+</script>

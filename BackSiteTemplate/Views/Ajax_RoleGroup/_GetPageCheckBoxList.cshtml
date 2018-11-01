@@ -1,0 +1,60 @@
+﻿@using BackSiteTemplate.Models.ViewModel;
+@model List<vmNavBarsContain>
+
+@{
+    var RoleGroupId = @TempData["RoleGroupId"];
+}
+<input name="Id" value="@RoleGroupId" hidden />
+<div class="input-group mb-2">
+    <div class="input-group-prepend">
+        <div class="input-group-text">權限群組</div>
+    </div>
+    <input type="text" class="form-control" id="inlineFormInputGroup"  name="GroupName" placeholder="群組名稱" value="@TempData["RoleGroupName"]" onchange="CheckRoleGroupName(this,'@RoleGroupId')" autocomplete="off"/>
+</div>
+<div class="input-group mb-2">
+    <span class="text-danger" id="RepeatGroupNameTip" style="display: none;">群組名稱重複已自動清除，請重新輸入</span>
+</div>
+
+@{
+    var Data = Model;
+    if (Data.Count() > 0)
+    {
+        foreach (var title in Data)
+        {
+            <hr />
+            <div class='mt-1'>
+                <label for='title'>@title.MainNavsName</label>
+            </div>
+            foreach (var Case in title.vmSubNavsQuery)
+            {
+                var SubNavsId = "SubNavs" + Case.Id;
+                var selectedStatus = Case.selected ? "checked" : "";
+                <div class='form-check form-check-inline'>
+                    <div class='custom-control custom-checkbox-JCk form-check-inline'>
+                        <input type='checkbox' id='@SubNavsId' class='custom-control-input' name='SubNavsId' value='@Case.Id' @selectedStatus />
+                        <label class='custom-control-label' for='@SubNavsId'>@Case.SubNavsName</label>
+                    </div>
+                </div>
+            }
+        }
+    }
+}
+
+<script>
+    function CheckRoleGroupName(e,Id) {
+        $.ajax({
+            url: '/Ajax_RoleGroup/CheckRoleGroupName',
+            type: 'POST',
+            data: {
+                RoleGroupId: Id,
+                GroupName: $(e).val()
+            },
+            success: function (data) {
+                if (data) {
+                    $(e).val('');
+                    $('#RepeatGroupNameTip').css("display", "inline").fadeOut(7000);
+                }
+            }
+        });
+    }
+</script>

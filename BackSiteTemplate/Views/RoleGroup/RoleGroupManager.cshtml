@@ -1,0 +1,166 @@
+﻿
+<button type="button" class="btn btn-md btn-primary" onclick="UpModal(this)" data-test="1">新增</button>
+
+<div id="Dts" class="container bg-white text-dark mt-3" style="font-size:15px">
+    <table id="example" class="table table-striped table-bordered display" style="width: 100%;">
+        <thead>
+            <tr>
+                <th style="width: 30%;">群組名稱</th>
+                <th style="width: 20%;">動作</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>群組名稱</th>
+                <th>動作</th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="RoleGroupModal" tabindex="-1" role="dialog" aria-labelledby="RoleGroupModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="RoleGroupModalTitle"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-auto">
+                    <form id="RoleSettingForm">
+                        <div id="GroupArea">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+                <button type="button" class="btn btn-primary SaveData">儲存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    
+    $(document).ready(function () {
+        InitDataTables();
+    });
+
+    function InitDataTables() {
+        var Table = $('#example');
+        Table.dataTable().fnDestroy();
+        Table.alert = "close";
+        Table.DataTable({
+            "processing": false,
+            "serverSide": true,
+            "ajax": {
+                "url": "/Ajax_RoleGroup/GetRoleGroupData",
+                "type": "GET"
+            },
+            "language": {
+                "processing": "處理中...",
+                "lengthMenu": "顯示 _MENU_ 筆",
+                "zeroRecords": "未找到任何資料",
+                "info": "顯示第 _START_ 至 _END_ 項結果，共 _TOTAL_ 項",
+                "infoEmpty": "沒有任何資料",
+                "infoFiltered": "<p>(從 _MAX_ 項結果過濾)",
+                "search": "關鍵字",
+                "paginate": {
+                    "sFirst": "首頁",
+                    "sPrevious": "上一頁",
+                    "sNext": "下一頁",
+                    "sLast": "尾頁"
+                }
+            },
+            "columns": [
+                {
+                    "data": "GroupName"
+                },
+                {
+                    "data": "Id",//資料行繫結屬性
+                    orderable: false, // 禁用排序
+                    render: function (data, type, row, meta) {
+                        //row指的是資料列物件 data變數相等於row.sysid
+                        var EditBtn = "<button class='btn btn-primary mr-1' onclick='EditData(this)' data-myid='" + data + "'>編輯</button>";
+                        var DeleteBtn = "<button class='btn btn-danger' onclick='DelData(this)' data-myid='" + data + "'>刪除</button>";
+                        return EditBtn + DeleteBtn;
+                    }
+                }
+            ]
+        });
+    }
+
+    function UpModal(e) {
+        $('#RoleGroupModalTitle').text($(e).text());
+        $.ajax({
+            url: '/Ajax_RoleGroup/GetPageCheckBoxList',
+            type: 'POST',
+            success: function (data) {
+                $('#GroupArea').empty();
+                $('#GroupArea').html(data);
+                $('#RoleGroupModal').modal('show');
+            }
+        });
+    }
+
+    $(".SaveData").click(function (event) {
+        $.ajax({
+            url: '/Ajax_RoleGroup/SaveRoleGroup',
+            data: $('#RoleSettingForm').serialize(),
+            type: 'POST',
+            success: function (data) {
+                location.reload();
+            }
+        });
+    });
+
+    function EditData(e) {
+        $('#RoleGroupModalTitle').text($(e).text());
+        $.ajax({
+            url: '/Ajax_RoleGroup/GetPageCheckBoxList',
+            type: 'POST',
+            data: { Id: $(e).data('myid') },
+            success: function (data) {
+                $('#GroupArea').empty();
+                $('#GroupArea').html(data);
+                $('#RoleGroupModal').modal('show');
+            }
+        });
+    }
+
+    function DelData(e) {
+        swal({
+            title: '確認嗎?',
+            text: "你即將刪除該筆資料!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '確認!',
+            cancelButtonText: '取消',
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33'
+            
+        }).then(function (result) {
+            if (result.value) {
+                $.ajax({
+                    url: '/Ajax_RoleGroup/DeleteRoleGroup',
+                    data: { Id: $(e).data('myid')},
+                    type: 'POST',
+                    success: function (data) {
+                        swal({
+                            title: "刪除!",
+                            text: data,
+                            type: "success",
+                            buttons: true
+                        }).then(function (result) {
+                            location.reload();
+                        });
+                    }
+                });
+            }
+        });
+    }
+</script>
