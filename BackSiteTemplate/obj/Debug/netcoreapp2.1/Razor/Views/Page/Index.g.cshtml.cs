@@ -66,7 +66,7 @@ using BackSiteTemplate.Models;
             WriteLiteral("\r\n<div class=\"card bg-dark text-white\" style=\"border:none;\">\r\n    ");
             EndContext();
             BeginContext(109, 93, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("img", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagOnly, "2346d91e0b0342d0910e3113d1870de2", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("img", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagOnly, "ebe9a79684a3496b8e15b37a57e4a12b", async() => {
             }
             );
             __Microsoft_AspNetCore_Mvc_Razor_TagHelpers_UrlResolutionTagHelper = CreateTagHelper<global::Microsoft.AspNetCore.Mvc.Razor.TagHelpers.UrlResolutionTagHelper>();

@@ -92,7 +92,7 @@ using BackSiteTemplate.Models;
                     ");
             EndContext();
             BeginContext(1427, 136, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "0ff8ee799fa84e499870f0f6d9d3cb81", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "f05538f75e45497c99a86babe3fb8252", async() => {
                 BeginContext(1452, 104, true);
                 WriteLiteral("\r\n                        <div id=\"WhiteListArea\">\r\n                        </div>\r\n                    ");
                 EndContext();

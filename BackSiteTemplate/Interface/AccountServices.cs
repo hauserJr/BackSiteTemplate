@@ -103,7 +103,7 @@ namespace BackSiteTemplate.Interface
             /// <param name="NewPwd">新密碼</param>
             /// <param name="CheckPwd">確認密碼</param>
             /// <returns></returns>
-            int ChangePwdAct(Guid UserId, string OldPwd = null, string NewPwd = null, string CheckPwd = null);
+            int ChangePwdAct(Guid UserId, vmChangePwd vmChangePwd);
         }
 
         public class AccountService : IAccountAction
@@ -433,26 +433,18 @@ namespace BackSiteTemplate.Interface
                 return OriPwd;
             }
 
-            public int ChangePwdAct(Guid UserId, string OldPwd = null, string NewPwd = null, string CheckPwd = null)
+            public int ChangePwdAct(Guid UserId, vmChangePwd vmChangePwd)
             {
                 int status = 0;
-                var UserOriPassWord = GetHashPwd(OldPwd);
+                var UserOriPassWord = GetHashPwd(vmChangePwd.OldPwd);
 
                 var GetCheckData = this.db.AccountList.Find(UserId);
-                if (GetCheckData != null && GetCheckData.LoginPwd == UserOriPassWord)
+                if (GetCheckData.LoginPwd == UserOriPassWord)
                 {
-                    var UserNewPassWord = GetHashPwd(NewPwd);
-                    var UserChePassWord = GetHashPwd(CheckPwd);
-                    if (UserNewPassWord != UserChePassWord)
-                    {
-                        status = (int)EnumChangePwd.新密碼前後不一致;
-                    }
-                    else
-                    {
-                        GetCheckData.LoginPwd = UserNewPassWord;
-                        this.db.SaveChanges();
-                        status = (int)EnumChangePwd.更新成功;
-                    }
+                    var UserNewPassWord = GetHashPwd(vmChangePwd.NewPwd);
+                    GetCheckData.LoginPwd = UserNewPassWord;
+                    this.db.SaveChanges();
+                    status = (int)EnumChangePwd.更新成功;
                 }
                 else
                 {

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using BackSiteTemplate.DB;
 using static BackSiteTemplate.Interface.IdentityServices;
+using BackSiteTemplate.Models.ViewModel;
 
 namespace BackSiteTemplate.Controllers
 {
@@ -76,6 +77,7 @@ namespace BackSiteTemplate.Controllers
             return View("Index");
         }
 
+        [HttpGet]
         [Authorize]
         public IActionResult ChangePwd()
         {
@@ -86,20 +88,24 @@ namespace BackSiteTemplate.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ChangePwdAct(string OldPwd = null, string NewPwd = null, string CheckPwd = null)
+        public IActionResult ChangePwd(vmChangePwd vmChangePwd)
         {
-            var UserData = this.UserData.GetClaim(User.Identity);
-            var status = this._IAccountAction.ChangePwdAct(UserData.Id.Value, OldPwd, NewPwd, CheckPwd);
-            if (status == (int)EnumChangePwd.更新成功)
+            if (ModelState.IsValid)
             {
-                HttpContext.SignOutAsync();
-                return Redirect("/Home/Index");
+                var UserData = this.UserData.GetClaim(User.Identity);
+                var status = this._IAccountAction.ChangePwdAct(UserData.Id.Value, vmChangePwd);
+                if (status == (int)EnumChangePwd.更新成功)
+                {
+                    HttpContext.SignOutAsync();
+                    return Redirect("/Home/Index");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "登入嘗試失試。");
+                    return View(vmChangePwd);
+                }
             }
-            TempData["Message"] = "密碼錯誤或前後密碼不一致";
-            TempData["OldPwd"] = OldPwd;
-            TempData["NewPwd"] = NewPwd;
-            TempData["CheckPwd"] = CheckPwd;
-            return View("ChangePwd");
+            return View(vmChangePwd);
         }
 
         [Authorize]
