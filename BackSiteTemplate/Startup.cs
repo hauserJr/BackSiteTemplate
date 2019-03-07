@@ -47,7 +47,7 @@ namespace BackSiteTemplate
 
             #region DB Setting。
             //Update Table
-            //Scaffold - DbContext "Data Source=www.goodarc.com,20100;Initial Catalog=BackSiteTemplate;Integrated Security=False;User ID=sa;Password=E1r0I2c6;" Microsoft.EntityFrameworkCore.SqlServer - t AccountList - f - OutputDir DB
+            //Scaffold - DbContext "Data Source=...Initial Catalog=BackSiteTemplate;Integrated Security=False;User ID=sa;Password=1111;" Microsoft.EntityFrameworkCore.SqlServer - t AccountList - f - OutputDir DB
             services.AddDbContext<BackSiteDBTempContext>(options =>
                   options.UseSqlServer(Configuration.GetConnectionString("DB")));
             #endregion
